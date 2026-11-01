@@ -1,11 +1,7 @@
 [
     {
-        "merged": "C:\\Users\\abhis\\.gradle\\daemon\\8.7\\com.example.androidapp-debug-33:\\layout_activity_main.xml.flat",
-        "source": "C:\\Users\\abhis\\.gradle\\daemon\\8.7\\com.example.androidapp-main-35:\\layout\\activity_main.xml"
-    },
-    {
-        "merged": "C:\\Users\\abhis\\.gradle\\daemon\\8.7\\com.example.androidapp-debug-33:\\menu_bottom_navigation.xml.flat",
-        "source": "C:\\Users\\abhis\\.gradle\\daemon\\8.7\\com.example.androidapp-main-35:\\menu\\bottom_navigation.xml"
+        "merged": "com.example.androidapp-debug-33:/menu_bottom_navigation.xml.flat",
+        "source": "com.example.androidapp-main-35:/menu/bottom_navigation.xml"
     },
     {
         "merged": "com.example.androidapp-debug-33:/layout_activity_main.xml.flat",
