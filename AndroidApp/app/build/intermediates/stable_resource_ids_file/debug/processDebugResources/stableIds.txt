@@ -1,0 +1,3 @@
+com.example.androidapp:style/Theme.AndroidApp = 0x7f030000
+com.example.androidapp:string/app_name = 0x7f020000
+com.example.androidapp:layout/activity_main = 0x7f010000

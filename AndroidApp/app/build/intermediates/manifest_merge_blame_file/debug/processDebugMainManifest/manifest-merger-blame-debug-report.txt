@@ -1,0 +1,42 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.example.androidapp"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <application
+11-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:3:5-16:19
+12        android:allowBackup="true"
+12-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:4:9-35
+13        android:debuggable="true"
+14        android:extractNativeLibs="false"
+15        android:label="@string/app_name"
+15-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:5:9-41
+16        android:supportsRtl="true"
+16-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:6:9-35
+17        android:theme="@style/Theme.AndroidApp" >
+17-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:7:9-48
+18        <activity
+18-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:8:9-15:20
+19            android:name="com.example.androidapp.MainActivity"
+19-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:9:13-41
+20            android:exported="true" >
+20-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:10:13-36
+21            <intent-filter>
+21-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:11:13-14:29
+22                <action android:name="android.intent.action.MAIN" />
+22-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:12:17-69
+22-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:12:25-66
+23
+24                <category android:name="android.intent.category.LAUNCHER" />
+24-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:13:17-77
+24-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:13:27-74
+25            </intent-filter>
+26        </activity>
+27    </application>
+28
+29</manifest>
