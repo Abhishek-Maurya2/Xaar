@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.view.View;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.navigation.NavigationBarView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -33,6 +37,8 @@ public final class MainActivity extends Activity {
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private LinearLayout devicePanel;
     private TextView statusText;
+    private LinearLayout homeView;
+    private LinearLayout settingsView;
     private volatile Socket connection;
 
     @Override
@@ -41,10 +47,23 @@ public final class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         devicePanel = findViewById(R.id.device_panel);
         statusText = findViewById(R.id.status_text);
+        homeView = findViewById(R.id.home_view);
+        settingsView = findViewById(R.id.settings_view);
+        ((TextView) findViewById(R.id.device_name)).setText(deviceName);
+        NavigationBarView navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnItemSelectedListener(item -> {
+            showPage(item.getItemId() == R.id.nav_home);
+            return true;
+        });
         executor.execute(this::listenForDiscovery);
         executor.execute(this::listenForConnections);
         executor.execute(this::broadcastPresence);
         executor.execute(this::expireDevices);
+    }
+
+    private void showPage(boolean home) {
+        homeView.setVisibility(home ? View.VISIBLE : View.GONE);
+        settingsView.setVisibility(home ? View.GONE : View.VISIBLE);
     }
 
     private void listenForDiscovery() {
@@ -148,8 +167,14 @@ public final class MainActivity extends Activity {
         devicePanel.removeAllViews();
         statusText.setText(devices.isEmpty() ? "Searching on this Wi-Fi network..." : "Select a device to connect.");
         for (Device device : devices.values()) {
-            Button button = new Button(this);
+            MaterialButton button = new MaterialButton(this);
             button.setText(device.name + " (" + device.address.getHostAddress() + ")");
+            button.setIconResource(android.R.drawable.ic_menu_share);
+            button.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_START);
+            button.setCornerRadius(28);
+            button.setTextSize(16);
+            button.setAllCaps(false);
+            button.setMinHeight(64);
             button.setOnClickListener(v -> connect(device));
             devicePanel.addView(button);
         }
@@ -159,13 +184,34 @@ public final class MainActivity extends Activity {
         runOnUiThread(() -> {
             devicePanel.removeAllViews();
             statusText.setText("Connected device");
+            MaterialCardView card = new MaterialCardView(this);
+            card.setRadius(28);
+            card.setCardBackgroundColor(Color.rgb(27, 34, 40));
+            card.setStrokeColor(Color.rgb(185, 199, 255));
+            card.setStrokeWidth(1);
+            LinearLayout cardContent = new LinearLayout(this);
+            cardContent.setOrientation(LinearLayout.VERTICAL);
+            cardContent.setPadding(20, 20, 20, 20);
             TextView name = new TextView(this);
             name.setText(device.name);
-            name.setTextSize(22);
+            name.setTextSize(20);
             name.setTextColor(Color.WHITE);
-            devicePanel.addView(name);
-            Button disconnect = new Button(this);
+            cardContent.addView(name);
+            TextView address = new TextView(this);
+            address.setText("Connected over Wi-Fi at " + device.address.getHostAddress());
+            address.setTextColor(Color.LTGRAY);
+            cardContent.addView(address);
+            card.addView(cardContent);
+            devicePanel.addView(card);
+            MaterialButton disconnect = new MaterialButton(this);
             disconnect.setText("Disconnect");
+            disconnect.setIconResource(android.R.drawable.ic_menu_close_clear_cancel);
+            disconnect.setAllCaps(false);
+            disconnect.setCornerRadius(28);
+            disconnect.setIconGravity(MaterialButton.ICON_GRAVITY_TEXT_START);
+            disconnect.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
             disconnect.setOnClickListener(v -> {
                 closeConnection(connection);
                 connection = null;

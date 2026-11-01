@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="on_primary">#102C60</color>
+    <color name="primary">#B9C7FF</color>
+    <color name="surface">#101418</color>
+    <color name="surface_container">#1B2228</color>
     <string name="app_name">AndroidApp</string>
-    <style name="Theme.AndroidApp" parent="android:style/Theme.Material.Light.NoActionBar"/>
+    <style name="Theme.AndroidApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/surface_container</item>
+        <item name="android:navigationBarColor">@color/surface_container</item>
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorSurfaceContainer">@color/surface_container</item>
+    </style>
 </resources>

@@ -1,7 +1,19 @@
 R_DEF: Internal format may change without notice
 local
+color on_primary
+color primary
+color surface
+color surface_container
+id bottom_navigation
+id device_name
 id device_panel
+id home_view
+id nav_home
+id nav_settings
+id settings_view
 id status_text
+id toolbar
 layout activity_main
+menu bottom_navigation
 string app_name
 style Theme.AndroidApp

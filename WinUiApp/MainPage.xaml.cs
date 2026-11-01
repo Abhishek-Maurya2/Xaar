@@ -1,25 +1,27 @@
-using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Microsoft.UI.Xaml.Controls;
 
 namespace WinUiApp;
 
-/// <summary>
-/// The main content page displayed inside the application window.
-/// Add your UI logic, event handlers, and data binding here.
-/// </summary>
 public sealed partial class MainPage : Page
 {
     private readonly LanConnectionService _service = new();
+    public string DeviceName { get; } = Environment.MachineName;
 
     public MainPage()
     {
         InitializeComponent();
+        AppNavigation.SelectedItem = AppNavigation.MenuItems[0];
         _service.DevicesChanged += devices => DispatcherQueue.TryEnqueue(() => ShowDevices(devices));
         _service.ConnectionChanged += device => DispatcherQueue.TryEnqueue(() => ShowConnection(device));
         _ = _service.StartAsync();
+    }
+
+    private void OnNavigationSelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+    {
+        var isSettings = args.SelectedItemContainer?.Tag?.ToString() == "settings";
+        HomeView.Visibility = isSettings ? Visibility.Collapsed : Visibility.Visible;
+        SettingsView.Visibility = isSettings ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void ShowDevices(IReadOnlyCollection<LanDevice> devices)
@@ -28,11 +30,46 @@ public sealed partial class MainPage : Page
             return;
 
         DevicePanel.Children.Clear();
-        foreach (var device in devices)
+        if (devices.Count == 0)
         {
-            var button = new Button { Content = $"{device.Name} ({device.Address})", HorizontalContentAlignment = HorizontalAlignment.Stretch };
-            button.Click += async (_, _) => await _service.ConnectAsync(device);
-            DevicePanel.Children.Add(button);
+            DevicePanel.Children.Add(new InfoBar
+            {
+                IsOpen = true,
+                Severity = InfoBarSeverity.Informational,
+                Title = "Looking for devices",
+                Message = "Keep both devices on the same Wi-Fi network."
+            });
+        }
+        else
+        {
+            foreach (var device in devices)
+            {
+                var connect = new Button
+                {
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
+                    HorizontalContentAlignment = HorizontalAlignment.Left,
+                    Padding = new Thickness(16, 12, 16, 12),
+                    Content = new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        Spacing = 12,
+                        Children =
+                        {
+                            new SymbolIcon { Symbol = Symbol.Contact },
+                            new StackPanel
+                            {
+                                Children =
+                                {
+                                    new TextBlock { Text = device.Name, FontSize = 17, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold },
+                                    new TextBlock { Text = device.Address.ToString(), Opacity = 0.65 }
+                                }
+                            }
+                        }
+                    }
+                };
+                connect.Click += async (_, _) => await _service.ConnectAsync(device);
+                DevicePanel.Children.Add(connect);
+            }
         }
 
         StatusText.Text = devices.Count == 0 ? "Searching on this Wi-Fi network..." : "Select a device to connect.";
@@ -47,9 +84,23 @@ public sealed partial class MainPage : Page
             return;
         }
 
-        StatusText.Text = "Connected device";
-        DevicePanel.Children.Add(new TextBlock { Text = device.Name, FontSize = 22 });
-        var disconnect = new Button { Content = "Disconnect", Margin = new Thickness(0, 12, 0, 0) };
+        StatusText.Text = "Connected";
+        DevicePanel.Children.Add(new InfoBar
+        {
+            IsOpen = true,
+            Severity = InfoBarSeverity.Success,
+            Title = device.Name,
+            Message = $"Connected over Wi-Fi at {device.Address}"
+        });
+        var disconnect = new Button
+        {
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                Children = { new SymbolIcon { Symbol = Symbol.UnFavorite }, new TextBlock { Text = "Disconnect" } }
+            }
+        };
         disconnect.Click += async (_, _) => await _service.DisconnectAsync();
         DevicePanel.Children.Add(disconnect);
     }
