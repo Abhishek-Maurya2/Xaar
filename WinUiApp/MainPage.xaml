@@ -14,5 +14,15 @@
         Use 'dotnet new winui-page' to create additional pages and navigate to them via
         the Frame in MainWindow (RootFrame).
     -->
-    <Grid />
+    <Grid Padding="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Spacing="8">
+            <TextBlock Text="Available devices" FontSize="28" FontWeight="SemiBold" />
+            <TextBlock x:Name="StatusText" Text="Searching on this Wi-Fi network..." Opacity="0.7" />
+        </StackPanel>
+        <StackPanel x:Name="DevicePanel" Grid.Row="1" Spacing="10" Margin="0,24,0,0" />
+    </Grid>
 </Page>

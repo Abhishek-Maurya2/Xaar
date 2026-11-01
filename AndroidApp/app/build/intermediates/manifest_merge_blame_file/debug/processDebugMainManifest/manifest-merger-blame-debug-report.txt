@@ -8,35 +8,42 @@
 8        android:minSdkVersion="24"
 9        android:targetSdkVersion="35" />
 10
-11    <application
-11-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:3:5-16:19
-12        android:allowBackup="true"
-12-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:4:9-35
-13        android:debuggable="true"
-14        android:extractNativeLibs="false"
-15        android:label="@string/app_name"
-15-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:5:9-41
-16        android:supportsRtl="true"
-16-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:6:9-35
-17        android:theme="@style/Theme.AndroidApp" >
-17-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:7:9-48
-18        <activity
-18-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:8:9-15:20
-19            android:name="com.example.androidapp.MainActivity"
-19-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:9:13-41
-20            android:exported="true" >
-20-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:10:13-36
-21            <intent-filter>
-21-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:11:13-14:29
-22                <action android:name="android.intent.action.MAIN" />
-22-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:12:17-69
-22-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:12:25-66
-23
-24                <category android:name="android.intent.category.LAUNCHER" />
-24-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:13:17-77
-24-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:13:27-74
-25            </intent-filter>
-26        </activity>
-27    </application>
-28
-29</manifest>
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:3:5-67
+11-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:3:22-64
+12    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+12-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:4:5-76
+12-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:4:22-73
+13
+14    <application
+14-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:5:5-18:19
+15        android:allowBackup="true"
+15-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:6:9-35
+16        android:debuggable="true"
+17        android:extractNativeLibs="false"
+18        android:label="@string/app_name"
+18-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:7:9-41
+19        android:supportsRtl="true"
+19-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:8:9-35
+20        android:theme="@style/Theme.AndroidApp" >
+20-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:9:9-48
+21        <activity
+21-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:10:9-17:20
+22            android:name="com.example.androidapp.MainActivity"
+22-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:11:13-41
+23            android:exported="true" >
+23-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:12:13-36
+24            <intent-filter>
+24-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:13:13-16:29
+25                <action android:name="android.intent.action.MAIN" />
+25-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:14:17-69
+25-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:14:25-66
+26
+27                <category android:name="android.intent.category.LAUNCHER" />
+27-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:15:17-77
+27-->C:\Users\abhis\Desktop\Xaar\AndroidApp\app\src\main\AndroidManifest.xml:15:27-74
+28            </intent-filter>
+29        </activity>
+30    </application>
+31
+32</manifest>
