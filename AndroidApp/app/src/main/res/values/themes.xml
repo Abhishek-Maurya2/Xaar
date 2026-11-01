@@ -1,11 +1,20 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
     <style name="Theme.AndroidApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Fallback baseline colors if Dynamic theming is unavailable -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorOnPrimary">@color/on_primary</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorSurfaceContainer">@color/surface_container</item>
-        <item name="android:statusBarColor">?attr/colorSurfaceContainer</item>
-        <item name="android:navigationBarColor">?attr/colorSurfaceContainer</item>
+        <item name="colorPrimary">@color/md_theme_light_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+        <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+        <item name="colorSurface">@color/md_theme_light_surface</item>
+        <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+        <item name="colorSurfaceContainerLow">@color/md_theme_light_surfaceContainerLow</item>
+        <item name="colorSurfaceContainer">@color/md_theme_light_surfaceContainer</item>
+        <item name="colorSurfaceContainerHigh">@color/md_theme_light_surfaceContainerHigh</item>
+        <item name="colorOutlineVariant">@color/md_theme_light_outlineVariant</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 </resources>

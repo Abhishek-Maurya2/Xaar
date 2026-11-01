@@ -1,120 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="?attr/colorSurface" 
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
+
+    <!-- Center-aligned Expressive Top App Bar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
-        android:title="Device Bridge"
-        app:titleTextColor="?attr/colorOnSurface"
-        android:background="?attr/colorSurfaceContainer"
-        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize" />
-        
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"
+        app:title="@string/app_name"
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Material3.TitleLarge"
+        app:titleTextColor="?attr/colorOnSurface" />
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
-        
-        <LinearLayout
+
+        <!-- HOME PAGE -->
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/home_view"
-            android:orientation="vertical"
-            android:padding="24dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            
-            <TextView
-                android:text="Connect devices"
-                android:textColor="?attr/colorOnSurface"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-                
-            <TextView
-                android:id="@+id/status_text"
-                android:text="Searching on this Wi-Fi network..."
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-                
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp">
+
             <LinearLayout
-                android:id="@+id/device_panel"
-                android:orientation="vertical"
-                android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        
-        <LinearLayout
-            android:id="@+id/settings_view"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            
-            <TextView
-                android:text="Settings"
-                android:textColor="?attr/colorOnSurface"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-                
-            <com.google.android.material.card.MaterialCardView
-                android:layout_marginTop="24dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
-                app:cardCornerRadius="28dp"
-                app:strokeColor="?attr/colorPrimary"
-                app:strokeWidth="1dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:padding="20dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- Expressive Hero Status Banner -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/hero_status_card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    
-                    <TextView
-                        android:text="Device identity"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                        
-                    <TextView
-                        android:id="@+id/device_name"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                        android:layout_marginTop="8dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            
-            <TextView
-                android:text="Devices are discovered automatically when both apps are connected to the same Wi-Fi network."
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                android:layout_marginTop="24dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <TextView
+                            android:id="@+id/hero_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Connect devices"
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                            android:textColor="?attr/colorOnPrimaryContainer"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/status_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Searching on this Wi-Fi network..."
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:textColor="?attr/colorOnPrimaryContainer" />
+
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/discovery_progress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:indeterminate="true"
+                            app:indicatorColor="?attr/colorOnPrimaryContainer"
+                            app:trackColor="?attr/colorPrimary"
+                            app:trackCornerRadius="8dp"
+                            app:trackThickness="6dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/section_devices_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp"
+                    android:paddingHorizontal="4dp"
+                    android:text="Available on LAN"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+
+                <!-- Dynamic Device Cards / Connected Card Container -->
+                <LinearLayout
+                    android:id="@+id/device_panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- SETTINGS PAGE -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/settings_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp"
+            android:visibility="gone">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:paddingHorizontal="4dp"
+                    android:text="Settings"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textStyle="bold" />
+
+                <!-- Appearance & Expressive Theming Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Appearance"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Choose your preferred color mode"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <!-- Expressive Segmented Button Group for Theme Mode -->
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/theme_toggle_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_theme_system"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="System" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_theme_light"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Light" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_theme_dark"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Dark" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                        <com.google.android.material.divider.MaterialDivider
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginVertical="16dp" />
+
+                        <!-- Dynamic Wallpaper Color Switch -->
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switch_dynamic_colors"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Dynamic wallpaper colors"
+                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                            android:textColor="?attr/colorOnSurface" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Device Identity Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Device identity"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:id="@+id/device_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                            android:textColor="?attr/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Devices are discovered automatically on UDP port 45454 when connected to the same Wi-Fi network."
+                            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </FrameLayout>
-    
+
+    <!-- Expressive Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
-        android:background="?attr/colorSurfaceContainer"
-        app:menu="@menu/bottom_navigation"
-        app:itemIconTint="?attr/colorPrimary"
-        app:itemTextColor="?attr/colorPrimary"
-        app:labelVisibilityMode="labeled"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        app:elevation="0dp"
+        app:itemActiveIndicatorStyle="@style/Widget.Material3.BottomNavigationView.ActiveIndicator"
+        app:itemIconTint="?attr/colorOnSurface"
+        app:itemTextColor="?attr/colorOnSurface"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_navigation" />
 </LinearLayout>

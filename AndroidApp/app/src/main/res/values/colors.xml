@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="surface">#101418</color>
-    <color name="surface_container">#1B2228</color>
-    <color name="primary">#B9C7FF</color>
-    <color name="on_primary">#102C60</color>
+    <!-- Light Fallback Palette -->
+    <color name="md_theme_light_primary">#2B5EA7</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#D7E2FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#001B3F</color>
+    <color name="md_theme_light_secondaryContainer">#DAE2F9</color>
+    <color name="md_theme_light_onSecondaryContainer">#131C2B</color>
+    <color name="md_theme_light_surface">#F9F9FF</color>
+    <color name="md_theme_light_onSurface">#191C20</color>
+    <color name="md_theme_light_onSurfaceVariant">#44474E</color>
+    <color name="md_theme_light_surfaceContainerLow">#F3F3FA</color>
+    <color name="md_theme_light_surfaceContainer">#EDEDF4</color>
+    <color name="md_theme_light_surfaceContainerHigh">#E7E8EE</color>
+    <color name="md_theme_light_outlineVariant">#C4C6D0</color>
+
+    <!-- Dark Fallback Palette -->
+    <color name="md_theme_dark_primary">#ACC7FF</color>
+    <color name="md_theme_dark_onPrimary">#002F67</color>
+    <color name="md_theme_dark_primaryContainer">#08458E</color>
+    <color name="md_theme_dark_onPrimaryContainer">#D7E2FF</color>
+    <color name="md_theme_dark_secondaryContainer">#3E4759</color>
+    <color name="md_theme_dark_onSecondaryContainer">#DAE2F9</color>
+    <color name="md_theme_dark_surface">#111318</color>
+    <color name="md_theme_dark_onSurface">#E2E2E9</color>
+    <color name="md_theme_dark_onSurfaceVariant">#C4C6D0</color>
+    <color name="md_theme_dark_surfaceContainerLow">#191C20</color>
+    <color name="md_theme_dark_surfaceContainer">#1D2024</color>
+    <color name="md_theme_dark_surfaceContainerHigh">#282A2F</color>
+    <color name="md_theme_dark_outlineVariant">#44474E</color>
 </resources>

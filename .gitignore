@@ -1,0 +1,111 @@
+# ====================================================================
+# OS & General Editor Artifacts
+# ====================================================================
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+Desktop.ini
+.DS_Store
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ====================================================================
+# Android & Gradle
+# ====================================================================
+# Built application files & packages
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+
+# Build and cache directories
+.gradle/
+**/build/
+intermediates/
+generated/
+
+# Local configuration & environment-specific files
+local.properties
+.externalNativeBuild/
+.cxx/
+
+# Android Studio / IntelliJ IDEA
+*.iml
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/caches/
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/deploymentTargetSelector.xml
+*.iws
+
+# Signing keys and credentials (never commit secrets)
+*.jks
+*.keystore
+google-services.json
+
+# Keep Gradle wrapper jar
+!gradle/wrapper/gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
+# Profiler & Log captures
+captures/
+*.hprof
+
+# ====================================================================
+# Windows (.NET / WinUI 3 / Visual Studio)
+# ====================================================================
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Aa]pp[Pp]ackages/
+BundleArtifacts/
+Package.StoreAssociation.xml
+_ReSharper*/
+[Tt]est[Rr]esults/
+
+# Visual Studio temporary files, caches, and user-specific settings
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# MSBuild / Publishing logs and outputs
+*.log
+*.tlog
+*.publishproj
+*.azurePubxml
+pubtmp/
+
+# NuGet Packages & intermediate lock files
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.assets.json
+
+# C++ / WinRT interop temporary outputs (if WinUI uses native components)
+x64/
+x86/
+ARM/
+ARM64/
+Debug/
+Release/
+ipch/
+*.aps
+*.pch
+*.idb
+*.pdb
+*.ilk
