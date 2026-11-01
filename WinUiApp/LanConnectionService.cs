@@ -1,7 +1,10 @@
 using System.Collections.Concurrent;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using System.Runtime.InteropServices;
 
 namespace WinUiApp;
 
@@ -21,6 +24,10 @@ public sealed class LanConnectionService : IAsyncDisposable
 
     public event Action<IReadOnlyCollection<LanDevice>>? DevicesChanged;
     public event Action<LanDevice?>? ConnectionChanged;
+    public event Action<PhoneStatus>? PhoneStatusReceived;
+    public event Action<PcStatus>? PcStatusReceived;
+    public event Action<byte[]>? PhoneWallpaperReceived;
+    public event Action<byte[]>? PcWallpaperReceived;
     public LanDevice? ConnectedDevice { get; private set; }
 
     public Task StartAsync()
@@ -44,6 +51,8 @@ public sealed class LanConnectionService : IAsyncDisposable
             _connection = client;
             ConnectedDevice = device with { Name = remoteName };
             ConnectionChanged?.Invoke(ConnectedDevice);
+            _ = SendPcStatusAsync(client);
+            _ = SendPcWallpaperAsync(client);
             _ = MonitorConnectionAsync(client);
         }
         catch
@@ -167,6 +176,8 @@ public sealed class LanConnectionService : IAsyncDisposable
             var address = ((IPEndPoint)client.Client.RemoteEndPoint!).Address;
             ConnectedDevice = new LanDevice(client.Client.RemoteEndPoint!.ToString()!, remoteName, address, ConnectionPort);
             ConnectionChanged?.Invoke(ConnectedDevice);
+            await SendPcStatusAsync(client);
+            await SendPcWallpaperAsync(client);
             await MonitorConnectionAsync(client);
         }
         catch
@@ -179,8 +190,14 @@ public sealed class LanConnectionService : IAsyncDisposable
     {
         try
         {
-            var buffer = new byte[1];
-            while (await client.GetStream().ReadAsync(buffer, _stop.Token) > 0) { }
+            using var reader = new StreamReader(client.GetStream(), Encoding.UTF8, leaveOpen: true);
+            while (!_stop.IsCancellationRequested)
+            {
+                var line = await reader.ReadLineAsync(_stop.Token);
+                if (line is null)
+                    break;
+                ProcessMessage(line);
+            }
         }
         catch
         {
@@ -189,6 +206,99 @@ public sealed class LanConnectionService : IAsyncDisposable
         if (ReferenceEquals(_connection, client))
             await DisconnectAsync();
     }
+
+    private void ProcessMessage(string message)
+        {
+            var parts = message.Split('|', 3);
+            if (parts.Length != 3 || parts[0] != "MSG")
+                return;
+
+            try
+            {
+                switch (parts[1])
+                {
+                    case "STATUS_PHONE":
+                        var phone = JsonSerializer.Deserialize<PhoneStatus>(parts[2]);
+                        if (phone is not null) PhoneStatusReceived?.Invoke(phone);
+                        break;
+                    case "WALLPAPER_PHONE":
+                        PhoneWallpaperReceived?.Invoke(Convert.FromBase64String(parts[2]));
+                        break;
+                    case "STATUS_PC":
+                        var pc = JsonSerializer.Deserialize<PcStatus>(parts[2]);
+                        if (pc is not null) PcStatusReceived?.Invoke(pc);
+                        break;
+                    case "WALLPAPER_PC":
+                        PcWallpaperReceived?.Invoke(Convert.FromBase64String(parts[2]));
+                        break;
+                }
+            }
+            catch (JsonException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+        }
+
+    private async Task SendPcStatusAsync(TcpClient client)
+        {
+            var battery = 100;
+            var charging = false;
+            if (GetSystemPowerStatus(out var power))
+            {
+                battery = power.BatteryLifePercent;
+                charging = power.ACLineStatus == 1;
+            }
+
+            var wifi = NetworkInterface.GetAllNetworkInterfaces()
+                .Any(network => network.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 &&
+                               network.OperationalStatus == OperationalStatus.Up);
+            await SendMessageAsync(client, "STATUS_PC", JsonSerializer.Serialize(new PcStatus(battery, charging, wifi)));
+        }
+
+    private async Task SendPcWallpaperAsync(TcpClient client)
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                @"Microsoft\Windows\Themes\TranscodedWallpaper");
+            if (File.Exists(path))
+                await SendMessageAsync(client, "WALLPAPER_PC", Convert.ToBase64String(await File.ReadAllBytesAsync(path)));
+        }
+
+    private async Task SendMessageAsync(TcpClient client, string type, string payload)
+        {
+            await StreamWriteAsync(client, $"MSG|{type}|{payload}\n");
+        }
+
+    private static readonly SemaphoreSlim WriteLock = new(1, 1);
+    private static async Task StreamWriteAsync(TcpClient client, string message)
+        {
+            await WriteLock.WaitAsync();
+            try
+            {
+                await using var writer = new StreamWriter(client.GetStream(), Encoding.UTF8, leaveOpen: true);
+                await writer.WriteLineAsync(message.AsMemory());
+                await writer.FlushAsync();
+            }
+            finally
+            {
+                WriteLock.Release();
+            }
+        }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SYSTEM_POWER_STATUS
+        {
+            public byte ACLineStatus;
+            public byte BatteryFlag;
+            public byte BatteryLifePercent;
+            public byte SystemStatusFlag;
+            public int BatteryLifeTime;
+            public int BatteryFullLifeTime;
+        }
+
+    [DllImport("kernel32.dll")]
+    private static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS status);
 
     private Task SendHelloAsync(NetworkStream stream, CancellationToken token)
     {

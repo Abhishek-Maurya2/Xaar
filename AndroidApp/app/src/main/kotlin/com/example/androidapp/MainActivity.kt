@@ -2,9 +2,19 @@ package com.example.androidapp
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.app.WallpaperManager
+import android.bluetooth.BluetoothAdapter
+import android.media.AudioManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.graphics.Typeface
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.BatteryManager
+import android.util.Base64
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -40,6 +50,8 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -71,6 +83,7 @@ class MainActivity : AppCompatActivity() {
 
     @Volatile private var isRunning = true
     @Volatile private var connection: Socket? = null
+    @Volatile private var remoteStatusText: TextView? = null
     @Volatile private var discoverySocket: DatagramSocket? = null
     @Volatile private var serverSocket: ServerSocket? = null
 
@@ -286,6 +299,8 @@ class MainActivity : AppCompatActivity() {
                     port = CONNECTION_PORT,
                     lastSeen = System.currentTimeMillis()
                 )
+                sendPhoneStatus(socket)
+                sendPhoneWallpaper(socket)
                 showConnected(connectedDevice)
                 monitorConnection(socket)
             } else {
@@ -307,6 +322,8 @@ class MainActivity : AppCompatActivity() {
                 val hello = line?.split("|", limit = 2)
                 if (hello != null && hello.size == 2 && hello[0] == "HELLO") {
                     connection = socket
+                    sendPhoneStatus(socket)
+                    sendPhoneWallpaper(socket)
                     showConnected(device.copy(name = hello[1], lastSeen = System.currentTimeMillis()))
                     monitorConnection(socket)
                 } else {
@@ -447,6 +464,12 @@ class MainActivity : AppCompatActivity() {
                 setPadding(0, dp(6), 0, dp(20))
                 setTextColor(themeColor(com.google.android.material.R.attr.colorOnSecondaryContainer))
             })
+            remoteStatusText = TextView(this).apply {
+                text = "Waiting for PC status..."
+                setTextColor(themeColor(com.google.android.material.R.attr.colorOnSecondaryContainer))
+                setPadding(0, 0, 0, dp(18))
+            }
+            content.addView(remoteStatusText)
 
             val disconnectBtn = MaterialButton(this).apply {
                 text = "Disconnect"
@@ -470,12 +493,89 @@ class MainActivity : AppCompatActivity() {
     private fun monitorConnection(socket: Socket) {
         executor.execute {
             try {
-                socket.getInputStream().read()
+                val reader = BufferedReader(InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))
+                while (socket.isConnected) {
+                    val line = reader.readLine() ?: break
+                    processMessage(line)
+                }
             } catch (_: Exception) {
             }
             if (connection === socket) {
                 connection = null
                 runOnUiThread(::showDevices)
+            }
+        }
+    }
+
+    private fun processMessage(message: String) {
+            val parts = message.split("|", limit = 3)
+            if (parts.size != 3 || parts[0] != "MSG") return
+            when (parts[1]) {
+                "STATUS_PC" -> {
+                    val status = JSONObject(parts[2])
+                    val charging = if (status.optBoolean("isCharging", status.optBoolean("IsCharging"))) " • charging" else ""
+                    val wifi = if (status.optBoolean("wifi", status.optBoolean("Wifi"))) " • Wi-Fi" else " • offline"
+                    runOnUiThread {
+                        remoteStatusText?.text = "PC: ${status.optInt("battery", status.optInt("Battery", 0))}% battery$charging$wifi"
+                    }
+                }
+                "WALLPAPER_PC" -> {
+                    val bytes = Base64.decode(parts[2], Base64.DEFAULT)
+                    runOnUiThread {
+                        remoteStatusText?.text = "${remoteStatusText?.text}\nDesktop wallpaper synced (${bytes.size / 1024} KB)"
+                    }
+                }
+            }
+        }
+
+    private fun sendPhoneStatus(socket: Socket) {
+            val battery = getSystemService(BatteryManager::class.java)
+                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+            val connectivity = getSystemService(ConnectivityManager::class.java)
+            val wifi = connectivity.activeNetwork?.let { connectivity.getNetworkCapabilities(it) }
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+            val bluetooth = BluetoothAdapter.getDefaultAdapter()?.isEnabled == true
+            val sound = when (getSystemService(AudioManager::class.java).ringerMode) {
+                AudioManager.RINGER_MODE_VIBRATE -> "vibrate"
+                AudioManager.RINGER_MODE_SILENT -> "silent"
+                else -> "normal"
+            }
+            sendMessage(socket, "STATUS_PHONE", JSONObject()
+                .put("battery", battery)
+                .put("wifi", wifi)
+                .put("bluetooth", bluetooth)
+                .put("sound", sound)
+                .toString())
+        }
+
+    private fun sendPhoneWallpaper(socket: Socket) {
+            executor.execute {
+                try {
+                    val drawable = WallpaperManager.getInstance(this).drawable ?: return@execute
+                    val bitmap = if (drawable is BitmapDrawable) drawable.bitmap else {
+                        val result = Bitmap.createBitmap(
+                            drawable.intrinsicWidth.coerceAtLeast(1),
+                            drawable.intrinsicHeight.coerceAtLeast(1),
+                            Bitmap.Config.ARGB_8888
+                        )
+                        drawable.setBounds(0, 0, result.width, result.height)
+                        drawable.draw(Canvas(result))
+                        result
+                    }
+                    val output = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 60, output)
+                    sendMessage(socket, "WALLPAPER_PHONE", Base64.encodeToString(output.toByteArray(), Base64.NO_WRAP))
+                } catch (_: Exception) {
+                }
+            }
+        }
+
+    private fun sendMessage(socket: Socket, type: String, payload: String) {
+            synchronized(socket) {
+                try {
+                    PrintWriter(OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true)
+                        .println("MSG|$type|$payload")
+                } catch (_: Exception) {
             }
         }
     }

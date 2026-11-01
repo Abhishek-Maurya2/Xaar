@@ -6,6 +6,7 @@ namespace WinUiApp;
 public sealed partial class MainPage : Page
 {
     private readonly LanConnectionService _service = new();
+    private TextBlock? _remoteStatus;
     public string DeviceName { get; } = Environment.MachineName;
 
     public MainPage()
@@ -14,6 +15,11 @@ public sealed partial class MainPage : Page
         AppNavigation.SelectedItem = AppNavigation.MenuItems[0];
         _service.DevicesChanged += devices => DispatcherQueue.TryEnqueue(() => ShowDevices(devices));
         _service.ConnectionChanged += device => DispatcherQueue.TryEnqueue(() => ShowConnection(device));
+        _service.PhoneStatusReceived += status => DispatcherQueue.TryEnqueue(() =>
+        {
+            if (_remoteStatus is not null)
+                _remoteStatus.Text = $"Phone: {status.Battery}% battery • {(status.Wifi ? "Wi-Fi" : "offline")} • {status.Sound}";
+        });
         _ = _service.StartAsync();
     }
 
@@ -80,6 +86,7 @@ public sealed partial class MainPage : Page
         DevicePanel.Children.Clear();
         if (device is null)
         {
+            _remoteStatus = null;
             StatusText.Text = "Disconnected. Searching on this Wi-Fi network...";
             return;
         }
@@ -92,6 +99,13 @@ public sealed partial class MainPage : Page
             Title = device.Name,
             Message = $"Connected over Wi-Fi at {device.Address}"
         });
+        _remoteStatus = new TextBlock
+        {
+            Text = "Waiting for phone status...",
+            Opacity = 0.75,
+            Margin = new Thickness(0, 12, 0, 0)
+        };
+        DevicePanel.Children.Add(_remoteStatus);
         var disconnect = new Button
         {
             Content = new StackPanel
