@@ -1,15 +1,18 @@
 package com.example.androidapp
 
-import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.MaterialColors
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -24,7 +27,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class MainActivity : Activity() {
+// Must extend AppCompatActivity for Material 3 and Night Mode support
+class MainActivity : AppCompatActivity() {
     companion object {
         private const val discoveryPort = 45454
         private const val connectionPort = 45455
@@ -41,8 +45,12 @@ class MainActivity : Activity() {
     @Volatile private var connection: Socket? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply Material 3 Dynamic Colors (wallpaper-based theming)
+        DynamicColors.applyToActivityIfAvailable(this)
+        
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
         devicePanel = findViewById(R.id.device_panel)
         statusText = findViewById(R.id.status_text)
         homeView = findViewById(R.id.home_view)
@@ -55,6 +63,8 @@ class MainActivity : Activity() {
                 true
             }
 
+        setupThemeControls()
+
         executor.execute(::listenForDiscovery)
         executor.execute(::listenForConnections)
         executor.execute(::broadcastPresence)
@@ -64,6 +74,91 @@ class MainActivity : Activity() {
     private fun showPage(home: Boolean) {
         homeView.visibility = if (home) View.VISIBLE else View.GONE
         settingsView.visibility = if (home) View.GONE else View.VISIBLE
+    }
+
+    // Generate dynamic theme controls for the settings view
+    private fun setupThemeControls() {
+        val themeToggleBtn = MaterialButton(this).apply {
+            text = "Toggle Light / Dark Mode"
+            cornerRadius = 28
+            setOnClickListener {
+                val currentMode = AppCompatDelegate.getDefaultNightMode()
+                if (currentMode == AppCompatDelegate.MODE_NIGHT_YES) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+            }
+        }
+        
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(40, 40, 40, 40)
+        }
+        
+        content.addView(TextView(this).apply {
+            text = "Appearance"
+            textSize = 20f
+            setPadding(0, 0, 0, 20)
+            setTextColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnBackground, Color.BLACK))
+        })
+        
+        content.addView(themeToggleBtn)
+        settingsView.addView(content)
+    }
+
+    private fun showConnected(device: Device) {
+        runOnUiThread {
+            devicePanel.removeAllViews()
+            statusText.text = "Connected"
+            
+            val card = MaterialCardView(this).apply {
+                radius = 28f
+                // Removed hardcoded RGB; using M3 semantic attributes
+                setCardBackgroundColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorSurfaceVariant, Color.DKGRAY))
+                setStrokeColor(getColor(R.color.primary))
+                strokeWidth = 1
+            }
+            
+            val content = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(40, 40, 40, 40)
+            }
+            
+            content.addView(TextView(this).apply {
+                text = device.name
+                textSize = 20f
+                setTextColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.WHITE))
+            })
+            
+            content.addView(TextView(this).apply {
+                text = "Connected over Wi-Fi at ${device.address.hostAddress}"
+                setPadding(0, 8, 0, 0)
+                setTextColor(MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnSurfaceVariant, Color.LTGRAY))
+            })
+            
+            card.addView(content)
+            devicePanel.addView(card)
+
+            devicePanel.addView(MaterialButton(this).apply {
+                text = "Disconnect"
+                setIconResource(android.R.drawable.ic_menu_close_clear_cancel)
+                iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+                isAllCaps = false
+                cornerRadius = 28
+                val marginParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { setMargins(0, 20, 0, 0) }
+                layoutParams = marginParams
+                
+                setOnClickListener {
+                    closeConnection(connection)
+                    connection = null
+                    showDevices()
+                }
+            })
+        }
     }
 
     private fun listenForDiscovery() {
@@ -121,7 +216,7 @@ class MainActivity : Activity() {
             PrintWriter(OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true)
                 .println("HELLO|$deviceName")
             if (hello.size == 2 && hello[0] == "HELLO") {
-                connection?.close()
+                closeConnection(connection)
                 connection = socket
                 showConnected(Device(socket.inetAddress.toString(), hello[1], socket.inetAddress, connectionPort, System.currentTimeMillis()))
                 monitorConnection(socket)
@@ -157,11 +252,7 @@ class MainActivity : Activity() {
     private fun showDevices() {
         if (connection != null) return
         devicePanel.removeAllViews()
-        statusText.text = if (devices.isEmpty()) {
-            "Searching on this Wi-Fi network..."
-        } else {
-            "Select a device to connect."
-        }
+        statusText.text = if (devices.isEmpty()) "Searching on this Wi-Fi network..." else "Select a device to connect."
         devices.values.forEach { device ->
             val button = MaterialButton(this).apply {
                 text = "${device.name} (${device.address.hostAddress})"
@@ -174,47 +265,6 @@ class MainActivity : Activity() {
                 setOnClickListener { connect(device) }
             }
             devicePanel.addView(button)
-        }
-    }
-
-    private fun showConnected(device: Device) {
-        runOnUiThread {
-            devicePanel.removeAllViews()
-            statusText.text = "Connected"
-            val card = MaterialCardView(this).apply {
-                radius = 28f
-                setCardBackgroundColor(Color.rgb(27, 34, 40))
-                setStrokeColor(Color.rgb(185, 199, 255))
-                strokeWidth = 1
-            }
-            val content = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                setPadding(20, 20, 20, 20)
-            }
-            content.addView(TextView(this).apply {
-                text = device.name
-                textSize = 20f
-                setTextColor(Color.WHITE)
-            })
-            content.addView(TextView(this).apply {
-                text = "Connected over Wi-Fi at ${device.address.hostAddress}"
-                setTextColor(Color.LTGRAY)
-            })
-            card.addView(content)
-            devicePanel.addView(card)
-
-            devicePanel.addView(MaterialButton(this).apply {
-                text = "Disconnect"
-                setIconResource(android.R.drawable.ic_menu_close_clear_cancel)
-                iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-                isAllCaps = false
-                cornerRadius = 28
-                setOnClickListener {
-                    closeConnection(connection)
-                    connection = null
-                    showDevices()
-                }
-            })
         }
     }
 

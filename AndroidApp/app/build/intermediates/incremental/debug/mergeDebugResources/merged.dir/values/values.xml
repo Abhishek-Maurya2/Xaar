@@ -7347,14 +7347,13 @@
     <style name="TextAppearance.Widget.AppCompat.Toolbar.Title" parent="Base.TextAppearance.Widget.AppCompat.Toolbar.Title">
     </style>
     <style name="Theme.AndroidApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:fontFamily">sans</item>
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">@color/surface_container</item>
-        <item name="android:navigationBarColor">@color/surface_container</item>
+        
         <item name="colorPrimary">@color/primary</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorSurface">@color/surface</item>
         <item name="colorSurfaceContainer">@color/surface_container</item>
+        <item name="android:statusBarColor">?attr/colorSurfaceContainer</item>
+        <item name="android:navigationBarColor">?attr/colorSurfaceContainer</item>
     </style>
     <style name="Theme.AppCompat" parent="Base.Theme.AppCompat"/>
     <style name="Theme.AppCompat.CompactMenu" parent="Base.Theme.AppCompat.CompactMenu"/>
